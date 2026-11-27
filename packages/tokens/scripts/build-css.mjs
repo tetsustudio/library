@@ -5,6 +5,7 @@ import { COLOR_THEME_PRESETS, VISUAL_STYLES, palettesCss } from '../dist/index.j
 
 mkdirSync('dist/css', { recursive: true })
 cpSync('src/css', 'dist/css', { recursive: true })
+cpSync('themes', 'dist/themes', { recursive: true })
 const defaults = Object.fromEntries(
   Object.entries(VISUAL_STYLES).map(([id, style]) => [id, style.defaultFamily]),
 )
