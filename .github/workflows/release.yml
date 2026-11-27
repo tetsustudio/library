@@ -1,11 +1,13 @@
 name: Release
+# Versions are bumped in the PR (`npx changeset version`), because the org does
+# not let Actions open pull requests. On main this publishes every package whose
+# version is not on npm yet, then mirrors it to GitHub Packages.
 on:
   push:
     branches: [main]
 concurrency: release
 permissions:
-  contents: write
-  pull-requests: write
+  contents: write # push release tags
   id-token: write # npm trusted publishing (OIDC) and provenance
   packages: write # GitHub Packages mirror
 jobs:
@@ -21,27 +23,29 @@ jobs:
       - run: npm install -g npm@latest
       - run: npm ci
       - run: npm run build
-      - id: changesets
-        uses: changesets/action@v1
-        with:
-          publish: npx changeset publish
-          title: 'chore: version packages'
-          commit: 'chore: version packages'
+      - name: Refuse unversioned changesets
+        run: |
+          if ls .changeset/*.md 2>/dev/null | grep -qv README.md; then
+            echo "::error::Pending changesets on main. Run 'npx changeset version' in the PR before merging."
+            exit 1
+          fi
+      - name: Publish to npm
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           # Bootstrap only: the first publish of a package needs a token. Once
           # every package has its trusted publisher on npmjs, delete NPM_TOKEN
           # and npm authenticates with OIDC.
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: npx changeset publish
+      - name: Push release tags
+        run: git push --follow-tags origin HEAD:main --tags || true
       - name: Mirror to GitHub Packages
-        if: steps.changesets.outputs.published == 'true'
         env:
           NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PUBLISHED: ${{ steps.changesets.outputs.publishedPackages }}
         run: |
-          echo "@tetsustudio:registry=https://npm.pkg.github.com" > "$RUNNER_TEMP/.npmrc"
-          echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> "$RUNNER_TEMP/.npmrc"
-          for name in $(echo "$PUBLISHED" | jq -r '.[].name'); do
-            dir=$(npm query ".workspace[name='$name']" | jq -r '.[0].location')
-            (cd "$dir" && npm publish --userconfig "$RUNNER_TEMP/.npmrc" --registry https://npm.pkg.github.com --provenance=false) || echo "mirror failed for $name"
+          printf '@tetsustudio:registry=https://npm.pkg.github.com\n//npm.pkg.github.com/:_authToken=%s\n' "$NODE_AUTH_TOKEN" > "$RUNNER_TEMP/.npmrc"
+          for dir in packages/*/; do
+            name=$(jq -r .name "$dir/package.json"); version=$(jq -r .version "$dir/package.json")
+            [ "$(jq -r .private "$dir/package.json")" = "true" ] && continue
+            if npm view "$name@$version" version --userconfig "$RUNNER_TEMP/.npmrc" >/dev/null 2>&1; then continue; fi
+            (cd "$dir" && npm publish --userconfig "$RUNNER_TEMP/.npmrc" --provenance=false) || echo "::warning::mirror failed for $name@$version"
           done

@@ -18,7 +18,8 @@ npm run build && npm test
 npx changeset   # describe a change to a published package
 ```
 
-Releases run from `main`: Changesets opens a "Version packages" PR, and merging
-it publishes to npm with trusted publishing and mirrors to GitHub Packages.
+Before merging a PR that changes a published package, run
+`npx changeset version` in it. On `main`, the release workflow publishes every
+version not yet on npm (trusted publishing) and mirrors it to GitHub Packages.
 
 MIT © Tetsu Studio
