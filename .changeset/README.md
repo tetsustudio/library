@@ -1,3 +1,3 @@
-Run `npx changeset` in every PR that changes a published package. The release
-workflow turns pending changesets into a "Version packages" PR; merging it
-publishes to npm (trusted publishing) and mirrors to GitHub Packages.
+Run `npx changeset` in every PR that changes a published package, then
+`npx changeset version` before merging. The release workflow on main publishes
+whatever version is not on npm yet and mirrors it to GitHub Packages.

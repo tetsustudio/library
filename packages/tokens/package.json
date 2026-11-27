@@ -1,6 +1,6 @@
 {
   "name": "@tetsustudio/tokens",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Tetsu design tokens: the CSS variable contract, visual styles, palettes and a theme validator.",
   "license": "MIT",
   "type": "module",
