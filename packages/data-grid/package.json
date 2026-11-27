@@ -23,7 +23,7 @@
   },
   "peerDependencies": {
     "@glideapps/glide-data-grid": "^6.0.4-alpha24",
-    "@tetsustudio/tokens": "^0.1.0",
+    "@tetsustudio/tokens": ">=0.1.0 <1",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "zustand": "^5.0.0"
