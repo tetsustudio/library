@@ -3,6 +3,7 @@ import { existsSync, readFileSync } from 'node:fs'
 import { test } from 'node:test'
 import {
   COLOR_THEME_PRESETS,
+  GALLERY_THEMES,
   REQUIRED_THEME_VARIABLES,
   STYLE_IDS,
   VISUAL_STYLES,
@@ -66,7 +67,15 @@ test('required variables are the five base tones', () => {
 test('package exports point at built files', () => {
   const pkg = JSON.parse(readFileSync('package.json', 'utf8'))
   for (const [key, target] of Object.entries(pkg.exports)) {
-    const file = typeof target === 'string' ? target : target.import
+    const file = (typeof target === 'string' ? target : target.import).replace('*', 'tetsu.css')
     assert.ok(existsSync(file), `${key} -> ${file}`)
+  }
+})
+
+test('every gallery theme passes the contract', () => {
+  assert.ok(GALLERY_THEMES.length >= 14)
+  for (const id of GALLERY_THEMES) {
+    const css = readFileSync(`dist/themes/${id}.css`, 'utf8')
+    assert.deepEqual(validateTheme(parseThemeCss(css, id)), [], id)
   }
 })

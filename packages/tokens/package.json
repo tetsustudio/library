@@ -1,31 +1,51 @@
 {
   "name": "@tetsustudio/tokens",
-  "version": "0.1.0",
-  "description": "Tetsu design tokens: the CSS variable contract, visual styles, palettes and a theme validator.",
+  "version": "0.2.0",
+  "description": "Tetsu design tokens: the CSS variable contract, visual styles, palettes, the style gallery themes and a theme validator.",
   "license": "MIT",
   "type": "module",
-  "repository": { "type": "git", "url": "git+https://github.com/tetsustudio/library.git", "directory": "packages/tokens" },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tetsustudio/library.git",
+    "directory": "packages/tokens"
+  },
   "homepage": "https://library.tetsustudio.com",
-  "sideEffects": ["*.css"],
+  "sideEffects": [
+    "*.css"
+  ],
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
     "./css": "./dist/css/index.css",
     "./base.css": "./dist/css/base.css",
     "./styles.css": "./dist/css/styles.css",
     "./palettes.css": "./dist/css/palettes.css",
     "./tailwind.css": "./dist/css/tailwind.css",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./themes/*": "./dist/themes/*"
   },
   "types": "./dist/index.d.ts",
-  "bin": { "tetsu-validate-theme": "./bin/validate-theme.mjs" },
-  "files": ["dist", "bin", "README.md"],
+  "bin": {
+    "tetsu-validate-theme": "./bin/validate-theme.mjs"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "README.md"
+  ],
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig.build.json && node scripts/build-css.mjs",
     "typecheck": "tsc --noEmit",
-    "test": "npm run build && node --test test/*.test.mjs"
+    "test": "npm run build && node --test test/*.test.mjs",
+    "sync-themes": "node scripts/sync-themes.mjs"
   },
   "devDependencies": {
     "typescript": "^5.9.3"
   },
-  "publishConfig": { "access": "public", "provenance": true }
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
 }

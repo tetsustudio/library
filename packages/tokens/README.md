@@ -26,6 +26,26 @@ npm install @tetsustudio/tokens
 Styles: `original`, `recto`, `papel`, `bloque`, `caramelo`, `tetsu`, `vidrio`.
 Each one ships a default light and dark palette; `class="dark"` switches mode.
 
+## Gallery themes
+
+Every style of [style.tetsustudio.com](https://style.tetsustudio.com) ships as
+a theme: brasa, chicle, hambre, laca, musgo, origami, plano, tetsu, vidrio, and
+the app styles original, recto, papel, bloque and caramelo.
+
+```css
+@import '@tetsustudio/tokens/css';
+@import '@tetsustudio/tokens/themes/vidrio.css';
+```
+
+```html
+<html data-style="vidrio">  <!-- class="dark" for dark mode -->
+```
+
+A theme loads its Google Fonts and sets colors (light and dark), shape and
+fonts. Its rules are unlayered, so they win over the base palettes. The list is
+exported as `GALLERY_THEMES`; `npm run sync-themes` refreshes it from the
+gallery repo.
+
 ## The contract
 
 A theme sets five variables, in light and in dark:
