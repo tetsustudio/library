@@ -1,0 +1,78 @@
+/* Tetsu token contract. A theme sets four tones (--background, --surface,
+   --foreground, --brand) plus --brand-foreground; every other color derives
+   from them with color-mix(), so applying a theme only overrides those five.
+   Shape and type come from the style (css/styles.css). Everything is plain CSS
+   custom properties: it works with or without Tailwind. */
+
+@layer base {
+  :root {
+    --background: #ffffff;
+    --surface: #fafafa;
+    --foreground: #000000;
+    --brand: #3b82f6;
+    --brand-foreground: #ffffff;
+
+    --card: var(--background);
+    --card-foreground: var(--foreground);
+    --popover: var(--surface);
+    --popover-foreground: var(--foreground);
+    --primary: var(--foreground);
+    --primary-foreground: var(--background);
+    --secondary: var(--surface);
+    --secondary-foreground: var(--foreground);
+    --muted: var(--surface);
+    --muted-foreground: color-mix(in srgb, var(--foreground) 55%, var(--background));
+    --accent: color-mix(in srgb, var(--foreground) 6%, var(--background));
+    --accent-foreground: var(--foreground);
+    --border: color-mix(in srgb, var(--foreground) 12%, var(--background));
+    --input: color-mix(in srgb, var(--foreground) 12%, var(--background));
+    --ring: var(--brand);
+
+    /* Status colors. Text on them uses the matching -foreground. */
+    --destructive: #ef4444;
+    --destructive-foreground: #ffffff;
+    --success: #16a34a;
+    --success-foreground: #ffffff;
+    --warning: #d97706;
+    --warning-foreground: #ffffff;
+    --info: #2563eb;
+    --info-foreground: #ffffff;
+
+    --sidebar: var(--background);
+    --sidebar-foreground: var(--foreground);
+    --sidebar-primary: var(--primary);
+    --sidebar-primary-foreground: var(--primary-foreground);
+    --sidebar-accent: var(--accent);
+    --sidebar-accent-foreground: var(--accent-foreground);
+    --sidebar-border: var(--border);
+    --sidebar-ring: var(--ring);
+
+    --chart-1: oklch(0.87 0 0);
+    --chart-2: oklch(0.556 0 0);
+    --chart-3: oklch(0.439 0 0);
+    --chart-4: oklch(0.371 0 0);
+    --chart-5: oklch(0.269 0 0);
+
+    --radius: 0.75rem;
+
+    /* Fonts: apps that load their own fonts (next/font, @font-face) set
+       --font-inter and friends; without them the system stack is used. */
+    --font-sans: var(--font-inter, ui-sans-serif, system-ui, sans-serif);
+    --font-heading: var(--font-nunito, ui-sans-serif, system-ui, sans-serif);
+    --font-mono: var(--font-jetbrains, ui-monospace, SFMono-Regular, Menlo, monospace);
+  }
+
+  .dark {
+    --background: #090909;
+    --surface: #171717;
+    --foreground: #ffffff;
+    --destructive: #f87171;
+    --destructive-foreground: #111111;
+    --success: #4ade80;
+    --success-foreground: #111111;
+    --warning: #fbbf24;
+    --warning-foreground: #111111;
+    --info: #60a5fa;
+    --info-foreground: #111111;
+  }
+}

@@ -1,0 +1,47 @@
+name: Release
+on:
+  push:
+    branches: [main]
+concurrency: release
+permissions:
+  contents: write
+  pull-requests: write
+  id-token: write # npm trusted publishing (OIDC) and provenance
+  packages: write # GitHub Packages mirror
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+          registry-url: https://registry.npmjs.org
+      - run: npm install -g npm@latest
+      - run: npm ci
+      - run: npm run build
+      - id: changesets
+        uses: changesets/action@v1
+        with:
+          publish: npx changeset publish
+          title: 'chore: version packages'
+          commit: 'chore: version packages'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Bootstrap only: the first publish of a package needs a token. Once
+          # every package has its trusted publisher on npmjs, delete NPM_TOKEN
+          # and npm authenticates with OIDC.
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - name: Mirror to GitHub Packages
+        if: steps.changesets.outputs.published == 'true'
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PUBLISHED: ${{ steps.changesets.outputs.publishedPackages }}
+        run: |
+          echo "@tetsustudio:registry=https://npm.pkg.github.com" > "$RUNNER_TEMP/.npmrc"
+          echo "//npm.pkg.github.com/:_authToken=${NODE_AUTH_TOKEN}" >> "$RUNNER_TEMP/.npmrc"
+          for name in $(echo "$PUBLISHED" | jq -r '.[].name'); do
+            dir=$(npm query ".workspace[name='$name']" | jq -r '.[0].location')
+            (cd "$dir" && npm publish --userconfig "$RUNNER_TEMP/.npmrc" --registry https://npm.pkg.github.com --provenance=false) || echo "mirror failed for $name"
+          done
