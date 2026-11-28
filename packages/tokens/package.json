@@ -42,7 +42,7 @@
     "sync-themes": "node scripts/sync-themes.mjs"
   },
   "devDependencies": {
-    "typescript": "^5.9.3"
+    "typescript": "^7.0.2"
   },
   "publishConfig": {
     "access": "public",

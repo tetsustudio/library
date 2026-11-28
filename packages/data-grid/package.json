@@ -37,7 +37,7 @@
     "@types/react-dom": "^19.2.0",
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
-    "typescript": "^5.9.3",
+    "typescript": "^7.0.2",
     "zustand": "^5.0.9"
   },
   "publishConfig": { "access": "public", "provenance": true }
