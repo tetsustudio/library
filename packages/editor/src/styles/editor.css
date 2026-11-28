@@ -1,0 +1,344 @@
+/* @tetsustudio/editor: plain CSS (ted- classes) on top of the token contract
+   of @tetsustudio/tokens. Every color, radius and font reads a token variable
+   with a neutral fallback, so it also works without the tokens. Milkdown ships
+   no theme here: this is the whole visual layer. */
+
+.ted-editor, .ted-toolbar, .ted-search, .ted-spell-popup, .ted-modal, .ted-lightbox, .ted-plain {
+  --ted-bg: var(--background, #fff);
+  --ted-fg: var(--foreground, #111);
+  --ted-surface: var(--surface, color-mix(in srgb, var(--ted-fg) 3%, var(--ted-bg)));
+  --ted-border: var(--border, color-mix(in srgb, var(--ted-fg) 12%, var(--ted-bg)));
+  --ted-muted: var(--muted-foreground, color-mix(in srgb, var(--ted-fg) 55%, var(--ted-bg)));
+  /* Body text a step softer than headings and bold. */
+  --ted-body: color-mix(in srgb, var(--ted-fg) 82%, var(--ted-bg));
+  --ted-hover: var(--accent, color-mix(in srgb, var(--ted-fg) 6%, var(--ted-bg)));
+  --ted-link: var(--ted-fg);
+  --ted-brand: var(--brand, #3b82f6);
+  --ted-brand-fg: var(--brand-foreground, #fff);
+  --ted-danger: var(--destructive, #dc2626);
+  --ted-highlight: var(--warning, #ffbd2e);
+  --ted-radius: var(--radius, 0.5rem);
+  --ted-font-mono: var(--font-mono, ui-monospace, SFMono-Regular, Menlo, monospace);
+  font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif);
+  color: var(--ted-fg);
+  box-sizing: border-box;
+}
+.ted-editor *, .ted-modal *, .ted-lightbox * { box-sizing: border-box; }
+
+.ted-icon { width: 1rem; height: 1rem; flex-shrink: 0; }
+.ted-spin { animation: ted-spin 1s linear infinite; }
+@keyframes ted-spin { to { transform: rotate(360deg); } }
+.ted-hidden { display: none !important; }
+.ted-icon-button {
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  padding: 0.25rem; border: none; border-radius: 9999px; background: none;
+  color: var(--ted-body); cursor: pointer; font: inherit;
+}
+.ted-icon-button .ted-icon { width: 0.875rem; height: 0.875rem; }
+.ted-icon-button:hover:not(:disabled) { background: var(--ted-hover); color: var(--ted-fg); }
+.ted-icon-button:disabled { opacity: 0.4; cursor: not-allowed; }
+.ted-icon-button:focus-visible, .ted-toolbar__button:focus-visible, .ted-switch:focus-visible, .ted-select:focus-visible {
+  outline: 2px solid var(--ring, var(--ted-brand)); outline-offset: 2px;
+}
+
+/* Layout */
+.ted-editor { display: flex; flex: 1; flex-direction: column; gap: 1rem; }
+.ted-editor--self-scroll { min-height: 0; }
+.ted-editor__body { position: relative; flex: 1; }
+.ted-editor--self-scroll .ted-editor__body { min-height: 0; overflow-y: auto; }
+.ted-editor__status { flex-shrink: 0; margin: 0; font-size: 0.75rem; color: var(--ted-muted); }
+.ted-editor__status[data-error='true'] { color: var(--ted-danger); }
+.ted-editor__toolbar {
+  z-index: 10; padding-top: 0.75rem; border-top: 1px solid var(--ted-border); background: var(--ted-bg);
+  position: sticky; bottom: 0; padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+}
+/* With selfScroll the toolbar is the last flex row, outside the scrolling box. */
+.ted-editor--self-scroll .ted-editor__toolbar { position: static; flex-shrink: 0; padding-bottom: 0.75rem; }
+
+/* Document */
+.ted-editor .ProseMirror {
+  min-height: 320px;
+  outline: none;
+  color: var(--ted-body);
+  font-family: var(--ted-font-family, var(--font-sans, ui-sans-serif, system-ui, sans-serif));
+  font-size: var(--ted-font-size, 1rem);
+  line-height: 1.7;
+  /* The left padding holds the block handle: posAtCoords and native drop
+     only resolve inside the editable box. */
+  padding: 0 20px 0 64px;
+}
+.ted-editor .ProseMirror > * + * { margin-top: 0.75em; }
+.ted-editor .ProseMirror :is(h1, h2, h3, h4, h5, h6) {
+  position: relative;
+  font-family: var(--font-heading, inherit);
+  font-weight: 600;
+  color: var(--ted-fg);
+  scroll-margin-top: 4.5rem;
+  margin-bottom: 0.5em;
+}
+/* The first heading is usually the title: no space pushes it down. */
+.ted-editor .ProseMirror :is(h1, h2, h3, h4, h5, h6):not(:first-child) { margin-top: 1.75em; }
+.ted-editor .ProseMirror h1 { font-size: calc(var(--ted-font-size, 1rem) * 1.75); }
+.ted-editor .ProseMirror h2 { font-size: calc(var(--ted-font-size, 1rem) * 1.4); }
+.ted-editor .ProseMirror h3 { font-size: calc(var(--ted-font-size, 1rem) * 1.15); }
+.ted-editor .ProseMirror strong { color: var(--ted-fg); }
+.ted-editor .ProseMirror blockquote { border-left: 3px solid var(--ted-border); padding-left: 1rem; margin-left: 0; color: var(--ted-body); }
+.ted-editor .ProseMirror code {
+  background: var(--ted-surface); border-radius: 6px; padding: 0.15em 0.4em;
+  font-family: var(--ted-font-mono); font-size: 0.9em;
+}
+.ted-editor .ProseMirror a { color: var(--ted-link); text-decoration: underline; text-underline-offset: 2px; }
+.ted-editor .ProseMirror hr { border: none; border-top: 1px solid var(--ted-border); margin: 2em 0; }
+.ted-editor .ProseMirror img { max-width: 100%; height: auto; border-radius: 8px; display: block; cursor: zoom-in; }
+.ted-editor .ProseMirror img.ProseMirror-selectednode { outline: 2px solid var(--ted-brand); outline-offset: 2px; }
+.ted-editor .ProseMirror table { width: 100%; border-collapse: collapse; margin: 0.25em 0; }
+.ted-editor .ProseMirror :is(th, td) { border: 1px solid var(--ted-border); padding: 0.4rem 0.6rem; text-align: left; vertical-align: top; }
+.ted-editor .ProseMirror th { background: var(--ted-surface); font-weight: 600; }
+.ted-editor .ProseMirror-selectednode, .ted-editor li.ProseMirror-selectednode { outline: none; }
+
+/* Lists and task items */
+.ted-editor .ProseMirror :is(ul, ol) { padding-left: 1.5rem; list-style: revert; }
+/* A real gap between items, so a dragged block can land between rows. */
+.ted-editor .ProseMirror li { margin-top: 0.3em; }
+.ted-editor .ProseMirror li:first-child { margin-top: 0; }
+.ted-editor .ProseMirror li:is(:focus, :focus-visible) { outline: none; }
+.ted-editor .ProseMirror li.task-list-item { list-style: none; margin-left: -1.5rem; display: flex; align-items: flex-start; gap: 0.5rem; }
+.ted-editor .ted-list-item__content { flex: 1; min-width: 0; }
+.ted-editor .ted-task-checkbox {
+  appearance: none; -webkit-appearance: none;
+  margin: 0.35em 0 0; width: 1.15rem; height: 1.15rem; flex-shrink: 0;
+  border: 1.5px solid var(--ted-border); border-radius: 4px;
+  background-color: var(--ted-surface); cursor: pointer;
+}
+/* Checked: an inner filled square in the text color, right in any theme. */
+.ted-editor .ted-task-checkbox:checked {
+  border-color: var(--ted-body);
+  background-color: var(--ted-body);
+  box-shadow: inset 0 0 0 3px var(--ted-surface);
+}
+.ted-editor .ted-task-checkbox:checked + .ted-list-item__content { text-decoration: line-through; color: var(--ted-muted); }
+
+/* Code blocks (@milkdown/kit/component/code-block ships no CSS) */
+.ted-editor :is(.milkdown-code-block, .milkdown-code-block-placeholder) {
+  position: relative; display: block; margin: 0; padding: 1rem;
+  background: var(--ted-surface); border-radius: 12px;
+  font-family: var(--ted-font-mono); font-size: 0.9em;
+}
+.ted-editor .milkdown-code-block-placeholder code { background: none; padding: 0; white-space: pre-wrap; }
+.ted-editor .milkdown-code-block .cm-editor { outline: none !important; background: none; }
+.ted-editor .milkdown-code-block .cm-scroller { font-family: var(--ted-font-mono); }
+.ted-editor .milkdown-code-block .tools { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
+.ted-editor .milkdown-code-block :is(.language-button, .copy-button, .preview-toggle-button) {
+  display: flex; align-items: center; gap: 0.35rem; padding: 0.2rem 0.6rem;
+  border: 1px solid var(--ted-border); border-radius: 9999px; background: var(--ted-bg);
+  color: var(--ted-body); font: inherit; font-size: 0.75rem; cursor: pointer;
+  opacity: 0; transition: opacity 0.15s ease;
+}
+.ted-editor .milkdown-code-block:hover :is(.language-button, .copy-button, .preview-toggle-button),
+.ted-editor .milkdown-code-block .language-button[data-expanded='true'],
+.ted-editor .milkdown-code-block .copy-button--copied { opacity: 1; }
+.ted-editor .milkdown-code-block :is(.language-button, .copy-button, .preview-toggle-button):hover { color: var(--ted-fg); }
+.ted-editor .milkdown-code-block .expand-icon svg { width: 12px; height: 12px; transition: transform 0.15s ease; }
+.ted-editor .milkdown-code-block .language-button[data-expanded='true'] .expand-icon { transform: rotate(180deg); }
+.ted-editor .milkdown-code-block .language-picker { position: absolute; z-index: 20; width: max-content; padding-top: 0.5rem; }
+.ted-editor .milkdown-code-block .list-wrapper {
+  width: 220px; padding-top: 0.75rem; overflow: hidden;
+  background: var(--ted-bg); border: 1px solid var(--ted-border); border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+.ted-editor .milkdown-code-block .search-box {
+  display: flex; align-items: center; gap: 0.4rem; height: 32px;
+  margin: 0 0.75rem 0.5rem; padding: 0 0.5rem;
+  border: 1px solid var(--ted-border); border-radius: 6px; background: var(--ted-surface);
+}
+.ted-editor .milkdown-code-block .search-box input { width: 100%; border: none; background: transparent; color: var(--ted-fg); font: inherit; font-size: 0.75rem; }
+.ted-editor .milkdown-code-block .search-box input:focus { outline: none; }
+.ted-editor .milkdown-code-block .search-box .clear-icon { cursor: pointer; color: var(--ted-muted); }
+.ted-editor .milkdown-code-block .search-box svg { width: 14px; height: 14px; }
+.ted-editor .milkdown-code-block .language-list { max-height: 260px; overflow-y: auto; margin: 0; padding: 0 0.4rem 0.4rem; list-style: none; }
+.ted-editor .milkdown-code-block .language-list-item {
+  display: flex; align-items: center; gap: 0.5rem; height: 32px; padding: 0 0.5rem;
+  border-radius: 6px; font-size: 0.75rem; color: var(--ted-fg); cursor: pointer;
+}
+.ted-editor .milkdown-code-block .language-list-item:is(:hover, :focus-visible) { outline: none; background: var(--ted-hover); }
+.ted-editor .milkdown-code-block .language-list-item .leading svg { width: 14px; height: 14px; }
+.ted-editor .milkdown-code-block .hidden { display: none; }
+
+/* Remote cursors (y-prosemirror sets each user's color inline) */
+.ted-editor .ProseMirror-yjs-cursor {
+  position: relative; margin-left: -1px; margin-right: -1px;
+  border-left: 1.5px solid; border-right: none; word-break: normal; pointer-events: none;
+}
+.ted-editor .ProseMirror-yjs-cursor > div {
+  position: absolute; top: -1.35em; left: -1.5px; padding: 2px 5px;
+  font-size: 0.7rem; font-weight: 600; line-height: 1; white-space: nowrap;
+  border-radius: 4px 4px 4px 0; color: #fff; user-select: none;
+}
+.ted-editor .ProseMirror-yjs-selection { border-radius: 2px; }
+
+/* Block handle (floating-ui sets left/top inline, never position) */
+.ted-block-handle { position: absolute; z-index: 20; display: flex; align-items: center; gap: 2px; opacity: 0; transition: opacity 0.1s ease; }
+.ted-block-handle[data-show='true'] { opacity: 1; }
+.ted-block-handle__button {
+  display: flex; align-items: center; justify-content: center; width: 26px; height: 26px;
+  border: none; border-radius: 6px; background: none; color: var(--ted-body); cursor: pointer;
+}
+.ted-block-handle__button:hover { background: var(--ted-hover); color: var(--ted-fg); }
+.ted-block-handle__button svg { width: 18px; height: 18px; }
+.ted-block-handle__drag { cursor: grab; }
+.ted-drop-indicator { height: 3px; margin: 2px 0; border-radius: 2px; background-color: var(--ted-brand); pointer-events: none; }
+/* No handle on touch (native drag does not fire from touch) nor below 768px,
+   where 64px of a phone's width is too much for one button. */
+@media (hover: none) and (pointer: coarse), (max-width: 767px) {
+  .ted-block-handle { display: none; }
+  .ted-editor .ProseMirror { padding-left: 20px; }
+}
+
+/* Collapsible headings */
+.ted-editor .ProseMirror .ted-heading-hidden { display: none; }
+.ted-editor .ProseMirror .ted-heading-toggle {
+  display: inline-flex; align-items: center; justify-content: center; vertical-align: middle;
+  width: 1.25rem; height: 1.25rem; margin-left: 0.375rem; padding: 0;
+  border: none; border-radius: 6px; background: transparent; color: var(--ted-muted); cursor: pointer;
+  opacity: 0; transition: opacity 120ms ease, background-color 120ms ease, transform 120ms ease;
+}
+.ted-editor .ProseMirror .ted-heading-toggle svg { width: 0.875rem; height: 0.875rem; }
+.ted-editor .ProseMirror :is(h1, h2, h3, h4, h5, h6):hover .ted-heading-toggle,
+.ted-editor .ProseMirror .ted-heading-toggle:focus-visible { opacity: 1; }
+.ted-editor .ProseMirror .ted-heading-toggle:hover { background: var(--ted-hover); color: var(--ted-fg); }
+.ted-editor .ProseMirror .ted-heading-toggle[aria-expanded='true'] { transform: rotate(90deg); }
+.ted-editor .ProseMirror .ted-heading-collapsed .ted-heading-toggle { opacity: 1; color: var(--ted-fg); }
+.ted-editor .ProseMirror .ted-heading-collapsed::after {
+  content: '···'; margin-left: 0.5rem; font-size: 0.7em; letter-spacing: 0.1em; color: var(--ted-muted); vertical-align: middle;
+}
+@media (hover: none) and (pointer: coarse) {
+  .ted-editor .ProseMirror .ted-heading-toggle { opacity: 0.5; }
+}
+
+/* Find in document: no borders or padding, so the text never reflows. */
+.ted-editor .ProseMirror .ted-search-match { background-color: color-mix(in srgb, var(--ted-highlight) 45%, transparent); border-radius: 2px; }
+.ted-editor .ProseMirror .ted-search-match--current { background-color: color-mix(in srgb, var(--ted-brand) 40%, transparent); box-shadow: 0 0 0 1px var(--ted-brand); }
+.ted-search {
+  position: sticky; top: var(--ted-header-height, 0px); z-index: 20;
+  display: flex; flex-shrink: 0; align-items: center; gap: 0.375rem; padding: 0.375rem 0.75rem;
+  border: 1px solid var(--ted-border); border-radius: 9999px; background: var(--ted-bg);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+.ted-search__icon { width: 0.875rem; height: 0.875rem; color: var(--ted-muted); }
+.ted-search__input { flex: 1; min-width: 0; border: none; background: transparent; color: var(--ted-fg); font: inherit; font-size: 0.875rem; outline: none; }
+.ted-search__input::placeholder { color: var(--ted-muted); }
+.ted-search__count { flex-shrink: 0; font-size: 0.75rem; font-variant-numeric: tabular-nums; color: var(--ted-muted); }
+
+/* Spellcheck */
+.ted-spell-error {
+  text-decoration: underline wavy var(--ted-spell-underline, var(--destructive, #dc2626));
+  text-decoration-thickness: 1.5px;
+  text-underline-offset: 3px;
+}
+.ted-spell-popup {
+  z-index: 30; min-width: 160px; max-width: 240px; padding: 4px;
+  border: 1px solid var(--ted-border); border-radius: 12px; background: var(--ted-bg);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+}
+.ted-spell-popup__header {
+  display: flex; align-items: center; justify-content: space-between; gap: 8px;
+  margin-bottom: 4px; padding: 2px 4px 4px 10px; border-bottom: 1px solid var(--ted-border);
+}
+.ted-spell-popup__word { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.75rem; color: var(--ted-muted); }
+.ted-spell-popup__close {
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  /* 28px: the smallest a finger hits without growing the popup. */
+  width: 28px; height: 28px; border: none; border-radius: 9999px; background: none;
+  font-size: 1rem; line-height: 1; color: var(--ted-muted); cursor: pointer;
+}
+.ted-spell-popup__close:hover { background: var(--ted-hover); color: var(--ted-fg); }
+.ted-spell-popup__item {
+  display: block; width: 100%; padding: 6px 10px; border: none; border-radius: 8px; background: none;
+  text-align: left; font: inherit; font-size: 0.875rem; color: var(--ted-fg); cursor: pointer;
+}
+.ted-spell-popup__item:hover { background: var(--ted-hover); }
+.ted-spell-popup__ignore { color: var(--ted-body); }
+.ted-spell-popup__empty { padding: 6px 10px; font-size: 0.875rem; color: var(--ted-muted); }
+.ted-spell-popup__divider { margin: 4px 2px; border-top: 1px solid var(--ted-border); }
+
+/* Toolbar */
+.ted-toolbar { position: relative; }
+.ted-toolbar__row {
+  display: flex; flex-wrap: nowrap; align-items: center; gap: 0.125rem;
+  padding: 0.375rem 0.5rem; overflow-x: auto; scrollbar-width: none;
+  border: 1px solid var(--ted-border); border-radius: 9999px; background: var(--ted-bg);
+}
+.ted-toolbar__row::-webkit-scrollbar { display: none; }
+.ted-toolbar__button {
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0;
+  width: 2rem; height: 2rem; border: none; border-radius: 9999px; background: none;
+  color: var(--ted-body); cursor: pointer; transition: background-color 120ms ease, color 120ms ease;
+}
+.ted-toolbar__button:hover:not(:disabled), .ted-toolbar__button[data-active='true'] { background: var(--ted-hover); color: var(--ted-fg); }
+.ted-toolbar__button:disabled { opacity: 0.4; cursor: not-allowed; }
+.ted-toolbar__overflow { display: none; }
+.ted-toolbar__overflow[data-open='true'] { display: contents; }
+.ted-toolbar__divider { width: 1px; height: 1.25rem; margin: 0 0.125rem; flex-shrink: 0; background: var(--ted-border); }
+.ted-toolbar__error {
+  position: absolute; top: -2rem; left: 0; right: 0; margin: 0; padding: 0.25rem 0.75rem;
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center;
+  border-radius: 9999px; background: var(--ted-bg); font-size: 0.75rem; color: var(--ted-danger);
+}
+@media (min-width: 768px) {
+  .ted-toolbar__row { flex-wrap: wrap; overflow: visible; }
+  .ted-toolbar__more { display: none; }
+  .ted-toolbar__overflow { display: contents; }
+}
+
+/* Image viewer */
+.ted-lightbox { position: fixed; inset: 0; z-index: 80; display: flex; flex-direction: column; background: rgba(0, 0, 0, 0.9); }
+.ted-lightbox__bar { display: flex; flex-shrink: 0; align-items: center; gap: 0.25rem; padding: 0.5rem; }
+.ted-lightbox__caption { flex: 1; min-width: 0; margin: 0; padding: 0 0.5rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 0.75rem; color: rgba(255, 255, 255, 0.7); }
+.ted-lightbox__button {
+  display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; width: 2.25rem; height: 2.25rem;
+  border: none; border-radius: 9999px; background: none; color: rgba(255, 255, 255, 0.7); cursor: pointer;
+}
+.ted-lightbox__button:hover { background: rgba(255, 255, 255, 0.1); color: #fff; }
+.ted-lightbox__stage { display: flex; flex: 1; min-height: 0; align-items: center; justify-content: center; overflow: hidden; }
+.ted-lightbox__image { max-width: 100%; max-height: 100%; object-fit: contain; user-select: none; }
+
+/* Spellcheck settings dialog */
+.ted-modal { position: fixed; inset: 0; z-index: 60; display: flex; align-items: center; justify-content: center; padding: 1rem; }
+.ted-modal__backdrop { position: fixed; inset: 0; background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(4px); }
+.ted-modal__panel {
+  position: relative; display: flex; flex-direction: column; gap: 1.25rem; width: 100%; max-width: 24rem; padding: 1.5rem;
+  border: 1px solid var(--ted-border); border-radius: calc(var(--ted-radius) * 2); background: var(--ted-bg);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25); font-size: 0.875rem;
+}
+.ted-modal__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+.ted-modal__title { display: flex; align-items: center; gap: 0.5rem; }
+.ted-modal__title h2 { margin: 0; font-size: 1.125rem; font-weight: 600; }
+.ted-settings__row { display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
+.ted-settings__row[data-disabled='true'] { opacity: 0.5; }
+.ted-settings__text { display: flex; flex-direction: column; gap: 0.125rem; }
+.ted-settings__hint { margin: 0; font-size: 0.75rem; color: var(--ted-muted); }
+.ted-settings__words { display: flex; flex-direction: column; gap: 0.5rem; }
+.ted-settings__list { display: flex; flex-direction: column; gap: 0.25rem; max-height: 12rem; margin: 0; padding: 0; overflow-y: auto; list-style: none; }
+.ted-settings__list li { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; padding: 0.375rem 0.5rem; border-radius: 0.5rem; }
+.ted-settings__list li:hover { background: var(--ted-hover); }
+.ted-settings__list li span { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ted-select {
+  height: 2.5rem; flex-shrink: 0; padding: 0 1rem; border: 1px solid var(--ted-border); border-radius: 9999px;
+  background: var(--ted-bg); color: var(--ted-fg); font: inherit;
+}
+.ted-select:disabled { opacity: 0.5; }
+.ted-switch {
+  position: relative; flex-shrink: 0; width: 2.75rem; height: 1.5rem; margin-top: 0.125rem; padding: 0;
+  border: none; border-radius: 9999px; background: var(--ted-border); cursor: pointer; transition: background-color 150ms ease;
+}
+.ted-switch[aria-checked='true'] { background: var(--ted-brand); }
+.ted-switch:disabled { cursor: not-allowed; }
+.ted-switch__thumb {
+  position: absolute; top: 0.125rem; left: 0.125rem; width: 1.25rem; height: 1.25rem;
+  border-radius: 9999px; background: var(--ted-bg); transition: transform 150ms ease;
+}
+.ted-switch[aria-checked='true'] .ted-switch__thumb { transform: translateX(1.25rem); background: var(--ted-brand-fg); }
+
+/* Plain-text mode */
+.ted-plain { min-width: 0; }
+.ted-plain .ted-plain__heading { font-weight: 600; color: var(--ted-brand); }
