@@ -1,0 +1,89 @@
+{
+  "name": "@tetsustudio/reader",
+  "version": "0.1.0",
+  "description": "Tetsu book reader for React: PDF (page, text and OCR views) and EPUB, with adapters for progress, translation and exit.",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tetsustudio/library.git",
+    "directory": "packages/reader"
+  },
+  "homepage": "https://library.tetsustudio.com",
+  "sideEffects": [
+    "*.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./idb-storage": {
+      "types": "./dist/idb-storage.d.ts",
+      "import": "./dist/idb-storage.js"
+    },
+    "./styles.css": "./dist/styles.css",
+    "./package.json": "./package.json"
+  },
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "tetsu-reader-assets": "./bin/reader-assets.mjs"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.build.json && node scripts/build-css.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "lucide-react": "^0.469.0",
+    "tailwind-merge": "^3.4.0"
+  },
+  "peerDependencies": {
+    "@tetsustudio/tokens": "^0.1.0",
+    "epubjs": "0.3.93",
+    "idb": "^8.0.0",
+    "pdfjs-dist": "6.2.108",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tesseract.js": "7.0.0"
+  },
+  "peerDependenciesMeta": {
+    "idb": {
+      "optional": true
+    },
+    "tesseract.js": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.5",
+    "@tesseract.js-data/eng": "1.0.0",
+    "@testing-library/react": "^16.3.3",
+    "@types/node": "^22.19.0",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "epubjs": "0.3.93",
+    "fake-indexeddb": "^6.2.5",
+    "idb": "^8.0.4",
+    "jsdom": "^27.0.0",
+    "pdf-lib": "^1.17.1",
+    "pdfjs-dist": "6.2.108",
+    "postcss": "^8.5.6",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "tailwindcss": "^4.3.5",
+    "tesseract.js": "7.0.0",
+    "tw-animate-css": "^1.4.0",
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

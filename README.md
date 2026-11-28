@@ -6,6 +6,7 @@ Components and tokens for Tetsu Studio apps, documented at
 | Package | What |
 | --- | --- |
 | [`@tetsustudio/tokens`](packages/tokens) | CSS variable contract, visual styles, palettes, theme validator |
+| [`@tetsustudio/reader`](packages/reader) | PDF and EPUB reader: OCR, translation, read aloud, progress sync adapters |
 
 Basic components (button, dialog, select…) are a shadcn registry at
 `https://library.tetsustudio.com/r`; heavy components ship as npm packages.
