@@ -1,0 +1,44 @@
+{
+  "name": "@tetsustudio/data-grid",
+  "version": "0.1.0",
+  "description": "Tetsu data grid: a table view and a collaborative spreadsheet view (Glide Data Grid) with a store driven by transport, realtime and notify adapters.",
+  "license": "MIT",
+  "type": "module",
+  "repository": { "type": "git", "url": "git+https://github.com/tetsustudio/library.git", "directory": "packages/data-grid" },
+  "homepage": "https://library.tetsustudio.com",
+  "sideEffects": ["*.css"],
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
+    "./model": { "types": "./dist/model/gridModel.d.ts", "import": "./dist/model/gridModel.js" },
+    "./store": { "types": "./dist/store/index.d.ts", "import": "./dist/store/index.js" },
+    "./styles.css": "./dist/styles.css",
+    "./package.json": "./package.json"
+  },
+  "types": "./dist/index.d.ts",
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.build.json && node scripts/build-css.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run build && node --test test/*.test.mjs"
+  },
+  "peerDependencies": {
+    "@glideapps/glide-data-grid": "^6.0.4-alpha24",
+    "@tetsustudio/tokens": ">=0.1.0 <1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zustand": "^5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@tetsustudio/tokens": { "optional": true }
+  },
+  "devDependencies": {
+    "@glideapps/glide-data-grid": "6.0.4-alpha24",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "typescript": "^5.9.3",
+    "zustand": "^5.0.9"
+  },
+  "publishConfig": { "access": "public", "provenance": true }
+}

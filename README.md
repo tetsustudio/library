@@ -6,10 +6,18 @@ Components and tokens for Tetsu Studio apps, documented at
 | Package | What |
 | --- | --- |
 | [`@tetsustudio/tokens`](packages/tokens) | CSS variable contract, visual styles, palettes, theme validator |
+| [`@tetsustudio/data-grid`](packages/data-grid) | Table and spreadsheet views of one data set, with a store driven by transport/realtime/notify adapters |
 | [`@tetsustudio/reader`](packages/reader) | PDF and EPUB reader: OCR, translation, read aloud, progress sync adapters |
 
 Basic components (button, dialog, select…) are a shadcn registry at
-`https://library.tetsustudio.com/r`; heavy components ship as npm packages.
+`https://library.tetsustudio.com/r`, built from `apps/site/registry/ui`; heavy
+components ship as npm packages. `apps/site` is library.tetsustudio.com:
+the registry, a live showcase and a style picker for every theme.
+
+```sh
+npx shadcn@latest add https://library.tetsustudio.com/r/tetsu-theme.json
+npx shadcn@latest add https://library.tetsustudio.com/r/button.json
+```
 
 ## Develop
 
