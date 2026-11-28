@@ -1,0 +1,89 @@
+{
+  "name": "@tetsustudio/editor",
+  "version": "0.1.0",
+  "description": "Tetsu markdown editor: a collaborative Milkdown editor on a Y.Doc you provide, a plain-text markdown mode, toolbar, search and an nspell spellchecker, with adapters for image upload, storage, dictionaries and labels.",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tetsustudio/library.git",
+    "directory": "packages/editor"
+  },
+  "homepage": "https://library.tetsustudio.com",
+  "sideEffects": [
+    "*.css"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./server": {
+      "types": "./dist/server.d.ts",
+      "import": "./dist/server.js"
+    },
+    "./styles.css": "./dist/styles.css",
+    "./package.json": "./package.json"
+  },
+  "types": "./dist/index.d.ts",
+  "bin": {
+    "tetsu-editor-dictionaries": "./bin/copy-dictionaries.mjs"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "rm -rf dist && tsc -p tsconfig.build.json && node scripts/build-css.mjs",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run build && node --test test/*.test.mjs"
+  },
+  "dependencies": {
+    "@codemirror/commands": "^6.10.4",
+    "@codemirror/lang-markdown": "^6.5.1",
+    "@codemirror/language": "^6.12.4",
+    "@codemirror/language-data": "^6.5.2",
+    "@codemirror/search": "^6.7.1",
+    "@codemirror/state": "^6.7.1",
+    "@codemirror/view": "^6.43.8",
+    "@lezer/highlight": "^1.2.3",
+    "@milkdown/kit": "7.21.2",
+    "@milkdown/plugin-collab": "7.21.2",
+    "@milkdown/react": "7.21.2",
+    "codemirror": "^6.0.2",
+    "dictionary-en": "4.0.0",
+    "dictionary-es": "4.0.0",
+    "dictionary-es-ar": "2.0.0",
+    "nspell": "^2.1.5"
+  },
+  "peerDependencies": {
+    "@tetsustudio/tokens": ">=0.1.0 <1",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "y-prosemirror": "^1.3.7",
+    "y-protocols": "^1.0.7",
+    "yjs": "^13.6.31"
+  },
+  "peerDependenciesMeta": {
+    "@tetsustudio/tokens": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/nspell": "2.1.6",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "jsdom": "^26.1.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "typescript": "^5.9.3",
+    "y-prosemirror": "1.3.7",
+    "y-protocols": "1.0.7",
+    "yjs": "13.6.31"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  }
+}

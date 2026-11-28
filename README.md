@@ -8,6 +8,7 @@ Components and tokens for Tetsu Studio apps, documented at
 | [`@tetsustudio/tokens`](packages/tokens) | CSS variable contract, visual styles, palettes, theme validator |
 | [`@tetsustudio/data-grid`](packages/data-grid) | Table and spreadsheet views of one data set, with a store driven by transport/realtime/notify adapters |
 | [`@tetsustudio/reader`](packages/reader) | PDF and EPUB reader: OCR, translation, read aloud, progress sync adapters |
+| [`@tetsustudio/editor`](packages/editor) | Collaborative markdown editor (Milkdown + Yjs) with plain-text mode, spellcheck and uploadImage/storage/dictionaryBaseUrl/labels adapters; headless `/server` entry |
 
 Basic components (button, dialog, select…) are a shadcn registry at
 `https://library.tetsustudio.com/r`, built from `apps/site/registry/ui`; heavy
