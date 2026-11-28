@@ -1,0 +1,20 @@
+name: Deploy site
+# library.tetsustudio.com on Vercel. The Vercel GitHub app is not installed on
+# the org, so main deploys through the CLI with a token.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+concurrency: deploy-site
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      VERCEL_ORG_ID: team_cGbyvkyrwDBgSvKGhDsrkodB
+      VERCEL_PROJECT_ID: prj_MBbYIkXtmOsxvt5cBfPdR7JiRSzH
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - run: npx -y vercel@latest deploy --prod --yes --token "${{ secrets.VERCEL_TOKEN }}"
