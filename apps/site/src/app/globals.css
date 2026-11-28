@@ -1,0 +1,69 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+@import '@tetsustudio/tokens/css';
+@import '@tetsustudio/tokens/tailwind.css';
+
+@source '../../registry';
+
+@layer base {
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+  * {
+    @apply outline-ring/50;
+  }
+}
+
+/* Toast region (same rules the registry's toast item installs). */
+[data-slot='toast-region'] {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  z-index: 100;
+  width: min(356px, calc(100vw - 2rem));
+  height: var(--toast-front-height);
+  translate: -50% 0;
+}
+[data-slot='toast-region'][data-expanded] {
+  height: calc(var(--toast-stack-height) + (var(--toast-count) - 1) * 12px);
+}
+[data-slot='toast'] {
+  --y: calc(var(--toast-index) * 12px);
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  z-index: calc(100 - var(--toast-index));
+  overflow: hidden;
+  height: var(--toast-height);
+  translate: var(--toast-swipe-x, 0px) calc(var(--y) + var(--toast-swipe-y, 0px));
+  scale: calc(1 - var(--toast-index) * 0.05);
+  transition-property: translate, scale, opacity, height;
+  transition-duration: 400ms;
+  user-select: none;
+}
+[data-slot='toast']:not([data-front], [data-expanded]) {
+  height: var(--toast-front-height);
+}
+[data-slot='toast'][data-expanded] {
+  --y: calc(var(--toast-offset) + var(--toast-index) * 12px);
+  scale: 1;
+}
+[data-slot='toast'][data-starting-style],
+[data-slot='toast'][data-swiping] {
+  transition: none;
+}
+[data-slot='toast'][data-starting-style][data-front] {
+  --y: -100%;
+}
+[data-slot='toast']:is([data-starting-style]:not([data-front]), [data-ending-style]) {
+  opacity: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-slot='toast'] {
+    transition-property: opacity;
+  }
+}
+
+pre {
+  font-family: var(--font-mono);
+}
